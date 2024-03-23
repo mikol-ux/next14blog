@@ -10,6 +10,7 @@ type User = {
   id: string;
   Email: string;
   role: string;
+  Username: string;
 };
 export default function Page() {
   const { firestore } = useFirebase();

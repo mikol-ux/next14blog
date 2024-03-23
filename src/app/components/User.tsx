@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
 import { doc, updateDoc, getDoc } from "firebase/firestore"; // Import Firestore functions for updating and fetching documents
 import { useFirebase } from "../context/Contextusers";
+import { db } from "@/firebase/firebase";
 
 type Option = {
   value: string;
@@ -11,10 +12,10 @@ type UserProps = {
   id: string;
   Email: string;
   role: string;
+  Username: string;
 };
 
-const User: React.FC<UserProps> = ({ id, Email, role }) => {
-  const { firestore } = useFirebase();
+const User: React.FC<UserProps> = ({ id, Email, role, Username }) => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const options: Option[] = [
     { value: "Admin", label: "admin" },
@@ -26,7 +27,7 @@ const User: React.FC<UserProps> = ({ id, Email, role }) => {
     const newRole = event.target.value;
     setSelectedOption(newRole);
 
-    const userRef = doc(firestore, "users", id);
+    const userRef = doc(db, "users", id);
 
     try {
       await updateDoc(userRef, { role: newRole });
@@ -47,7 +48,7 @@ const User: React.FC<UserProps> = ({ id, Email, role }) => {
   // Fetch the updated role on component mount
   useEffect(() => {
     const fetchUserRole = async () => {
-      const userRef = doc(firestore, "users", id);
+      const userRef = doc(db, "users", id);
       try {
         const userDoc = await getDoc(userRef);
         if (userDoc.exists()) {
@@ -61,11 +62,12 @@ const User: React.FC<UserProps> = ({ id, Email, role }) => {
     };
 
     fetchUserRole();
-  }, [firestore, id]);
+  }, [db, id]);
 
   return (
     <div className="flex p-1 justify-around text-start">
       <h1>{Email}</h1>
+      <h1>{Username}</h1>
       {<h1>{selectedOption}</h1> || <h1>{role}</h1>}
       <div>
         {/* <label htmlFor="selectOptions">Choose an option:</label> */}
