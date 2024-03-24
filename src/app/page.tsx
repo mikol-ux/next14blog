@@ -16,27 +16,19 @@ type User = {
   Username: string;
 };
 export default function Home() {
-  const [user, setUser] = useState<string | null | undefined>();
-  const [main, setMain] = useState<User | undefined>();
+  const [user, setUser] = useState<User[] | null>(null);
   const session = useSession({
     required: true,
     onUnauthenticated() {
       redirect("/signin");
     },
   });
-
+  const userEmail = session?.data?.user?.email;
   const fetchData = async () => {
     try {
-      const userEmail = session?.data?.user?.email;
       const response = await Userdata();
       console.log(response);
-      const mainUser = response.find((user) => {
-        user.Email === userEmail;
-      });
-      console.log(userEmail);
-      console.log(mainUser);
-      setMain(mainUser);
-      setUser(userEmail);
+      setUser(response);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -44,14 +36,14 @@ export default function Home() {
   };
   useEffect(() => {
     fetchData(); // Fetch the first page on component mount
-  }, [main, user]);
+  }, []);
   return (
     <div className="p-8 text-emerald-600">
       <div className="text-black">{session?.data?.user?.email}</div>
       <div className="bg-black">
-        <p>{main?.Email}</p>
-        <p>{main?.Username}</p>
-        <p>{main?.role}</p>
+        <p>{}</p>
+        <p>{}</p>
+        <p>{}</p>
       </div>
       <button className="text-black" onClick={() => signOut()}>
         Logout
